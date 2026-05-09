@@ -19,7 +19,7 @@ class DogsRepository private constructor() {
     private fun loadAllDogs(): MutableList<Dog> = Json.decodeFromString(file.readText())
 
     companion object {
-        private var instance = DogsRepository()
+        private var instance: DogsRepository? = null
 
         fun getInstance(password: String): DogsRepository {
             val correct = File("password_dogs.txt").readText().trim()
