@@ -1,0 +1,33 @@
+package dogs
+
+import kotlinx.serialization.json.Json
+import java.io.File
+
+class DogsRepository private constructor() {
+
+    init {
+        println("init")
+    }
+
+    val file = File("dogs.json")
+
+    private val _dogs = loadAllDogs()
+
+    val dogs
+        get() = _dogs.toList()
+
+    private fun loadAllDogs(): MutableList<Dog> = Json.decodeFromString(file.readText())
+
+    companion object {
+        private var instance = DogsRepository()
+
+        fun getInstance(password: String): DogsRepository {
+            val correct = File("password_dogs.txt").readText().trim()
+            if (correct != password) throw IllegalArgumentException("Wrong password")
+            if (instance == null) {
+                instance = DogsRepository()
+            }
+            return instance!!
+        }
+    }
+}
