@@ -19,15 +19,21 @@ class UsersRepository private constructor() {
     private fun loadAllUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
 
     companion object {
+
+        private val lock = Any()
         private var instance: UsersRepository? = null
 
         fun getInstance(password: String): UsersRepository {
             val correct = File("password_users.txt").readText().trim()
             if (correct != password) throw IllegalArgumentException("Wrong password")
-            if (instance == null) {
-                instance = UsersRepository()
+            instance?.let { return it } // double check
+            synchronized(lock) {
+                instance?.let { return it }
+
+                return UsersRepository().also {
+                    instance = it
+                }
             }
-            return instance!!
         }
     }
 }
