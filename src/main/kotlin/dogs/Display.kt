@@ -22,7 +22,7 @@ class Display {
             isResizable = false
             add(scrollPane)
         }
-        DogsRepository.getInstance("qwerty").addOnDogsChangedListener { dogs ->
+        DogsRepository.getInstance("qwerty").dogs.registerObserver { dogs ->
             dogs.joinToString("\n").let { textArea.text = it }
 //            textArea.text = it.joinToString("\n")
         }

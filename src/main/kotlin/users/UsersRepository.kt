@@ -1,47 +1,37 @@
 package users
 
-import observer.Observer
-import observer.Observable
 import kotlinx.serialization.json.Json
+import observer.MutableObservable
 import java.io.File
 
-class UsersRepository private constructor(): Observable<List<User>> {
+class UsersRepository private constructor() {
 
     private val file = File("users.json")
 
     private val _users: MutableList<User> = loadAllUsers()
-    override val currentValue: List<User>
-        get() = _users.toList()
+    val users = MutableObservable(_users.toList())
 
-    private val _observers = mutableListOf<Observer<List<User>>>()
-    override val observers
-        get() = _observers.toList()
-
-    override fun registerObserver(observer: Observer<List<User>>) {
-        _observers.add(observer)
-        observer.onChanged(currentValue)
-    }
-
-    override fun unregisterObserver(observer: Observer<List<User>>) {
-        _observers.remove(observer)
-    }
-
-    fun addOnUsersChangedListener(observer: Observer<List<User>>) {
-        registerObserver(observer)
-    }
+    val oldestUser = MutableObservable(_users.maxBy { it.age })
 
     private fun loadAllUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
 
     fun addUser(firstName: String, lastName: String, age: Int) {
-        val id = currentValue.maxOf { it.id + 1 }
-        val newUser = User(id, age, firstName, lastName)
-        _users.add(newUser)
-        notifyObservers()
+        val id = _users.maxOf { it.id + 1 }
+        val user = User(id, age, firstName, lastName)
+        _users.add(user)
+        users.currentValue = _users.toList()
+        if (age > oldestUser.currentValue.age) {
+            oldestUser.currentValue = user
+        }
     }
 
     fun deleteUser(id: Int) {
         _users.removeIf { it.id == id }
-        notifyObservers()
+        users.currentValue = _users.toList()
+        val newOldest = _users.maxBy { it.age }
+        if (newOldest != oldestUser.currentValue) {
+            oldestUser.currentValue = newOldest
+        }
     }
 
     fun saveChanges() {
