@@ -1,4 +1,4 @@
-package dogs
+package users
 
 import java.awt.Dimension
 import java.awt.Font
@@ -7,7 +7,7 @@ import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
 
-class Display {
+class Display2 {
 
     fun show() {
         val textArea = JTextArea().apply {
@@ -22,9 +22,8 @@ class Display {
             isResizable = false
             add(scrollPane)
         }
-        DogsRepository.getInstance("qwerty").addOnDogsChangedListener { dogs ->
-            dogs.joinToString("\n").let { textArea.text = it }
-//            textArea.text = it.joinToString("\n")
+        UsersRepository2.getInstance("qwerty").registerObserver {
+            textArea.text = it.joinToString("\n")
         }
     }
 }

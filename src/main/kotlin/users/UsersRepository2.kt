@@ -1,10 +1,9 @@
 package users
 
-import observer.Observer
 import kotlinx.serialization.json.Json
 import java.io.File
 
-class UsersRepository private constructor() {
+class UsersRepository2 private constructor() {
 
     private val file = File("users.json")
 
@@ -12,17 +11,17 @@ class UsersRepository private constructor() {
     val users
         get() = _users.toList()
 
-    private val observers = mutableListOf<Observer<List<User>>>()
+    private val observers = mutableListOf<(List<User>) -> Unit>()
 
     private fun notifyObservers() {
         for (observer in observers) {
-            observer.onChanged(users)
+            observer(users)
         }
     }
 
-    fun addOnUsersChangedListener(observer: Observer<List<User>>) {
+    fun registerObserver(observer: (List<User>) -> Unit) {
         observers.add(observer)
-        observer.onChanged(users)
+        observer(users)
     }
 
     private fun loadAllUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
@@ -47,16 +46,16 @@ class UsersRepository private constructor() {
     companion object {
 
         private val lock = Any()
-        private var instance: UsersRepository? = null
+        private var instance: UsersRepository2? = null
 
-        fun getInstance(password: String): UsersRepository {
+        fun getInstance(password: String): UsersRepository2 {
             val correct = File("password_users.txt").readText().trim()
             if (correct != password) throw IllegalArgumentException("Wrong password")
             instance?.let { return it } // double check
             synchronized(lock) {
                 instance?.let { return it }
 
-                return UsersRepository().also {
+                return UsersRepository2().also {
                     instance = it
                 }
             }

@@ -20,7 +20,7 @@ class DogsRepository private constructor() {
         }
     }
 
-    fun registerObserver(observer: Observer<List<Dog>>) {
+    fun addOnDogsChangedListener(observer: Observer<List<Dog>>) {
         observers.add(observer)
         observer.onChanged(dogs)
     }

@@ -23,10 +23,8 @@ class Display {
             isResizable = false
             add(scrollPane)
         }
-        UsersRepository.getInstance("qwerty").registerObserver(object : Observer<List<User>> {
-            override fun onChanged(newValue: List<User>) {
-                textArea.text = newValue.joinToString("\n")
-            }
-        })
+        UsersRepository.getInstance("qwerty").addOnUsersChangedListener {
+            textArea.text = it.joinToString("\n")
+        }
     }
 }
