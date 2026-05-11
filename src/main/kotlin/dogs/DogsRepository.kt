@@ -1,17 +1,18 @@
 package dogs
 
+import observer.Observer
 import kotlinx.serialization.json.Json
 import java.io.File
 
 class DogsRepository private constructor() {
 
-    val file = File("dogs.json")
+    private val file = File("dogs.json")
 
     val _dogs: MutableList<Dog> = loadAllDogs()
     val dogs
         get() = _dogs.toList()
 
-    private val observers = mutableListOf<Display>()
+    private val observers = mutableListOf<Observer<List<Dog>>>()
 
     private fun notifyObservers() {
         for (observer in observers) {
@@ -19,7 +20,7 @@ class DogsRepository private constructor() {
         }
     }
 
-    fun registerObserver(observer: Display) {
+    fun registerObserver(observer: Observer<List<Dog>>) {
         observers.add(observer)
         observer.onChanged(dogs)
     }
@@ -52,7 +53,7 @@ class DogsRepository private constructor() {
             val correct = File("password_dogs.txt").readText().trim()
             if (correct != password) throw IllegalArgumentException("Wrong password")
             instance?.let { return it } // double check
-            synchronized(lock)  {
+            synchronized(lock) {
                 instance?.let { return it }
                 
                 return DogsRepository().also {
