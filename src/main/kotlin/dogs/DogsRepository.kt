@@ -2,31 +2,35 @@ package dogs
 
 import kotlinx.serialization.json.Json
 import observer.MutableObservable
+import observer.Observable
 import java.io.File
 
 class DogsRepository private constructor() {
 
     private val file = File("dogs.json")
 
-    private val _dogs: MutableList<Dog> = loadAllDogs()
-    val dogs = MutableObservable(_dogs.toList())
+    private val dogsList: MutableList<Dog> = loadAllDogs()
+
+    private val _dogs = MutableObservable(dogsList.toList())
+    val dogs: Observable<List<Dog>>
+        get() = _dogs
 
     private fun loadAllDogs(): MutableList<Dog> = Json.decodeFromString(file.readText())
 
     fun addDog(breedName: String, dogName: String, weight: Double) {
-        val id = _dogs.maxOf { it.id + 1 }
+        val id = dogsList.maxOf { it.id + 1 }
         val newDog = Dog(id, weight, breedName, dogName)
-        _dogs.add(newDog)
-        dogs.currentValue = _dogs.toList()
+        dogsList.add(newDog)
+        _dogs.currentValue = dogsList.toList()
     }
 
     fun deleteDog(id: Int) {
-        _dogs.removeIf { it.id == id }
-        dogs.currentValue = _dogs.toList()
+        dogsList.removeIf { it.id == id }
+        _dogs.currentValue = dogsList.toList()
     }
 
     fun saveChanges() {
-        val json = Json.encodeToString(_dogs)
+        val json = Json.encodeToString(dogsList)
         file.writeText(json)
     }
 

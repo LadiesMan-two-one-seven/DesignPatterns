@@ -1,7 +1,5 @@
 package observer
 
-import observer.Observer
-
 interface Observable<T> {
 
     val currentValue: T

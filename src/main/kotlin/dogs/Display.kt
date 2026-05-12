@@ -24,7 +24,6 @@ class Display {
         }
         DogsRepository.getInstance("qwerty").dogs.registerObserver { dogs ->
             dogs.joinToString("\n").let { textArea.text = it }
-//            textArea.text = it.joinToString("\n")
         }
     }
 }
