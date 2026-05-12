@@ -7,6 +7,10 @@ import java.io.File
 
 class UsersRepository private constructor() {
 
+    init {
+        println("Creating repository...")
+    }
+
     private val file = File("users.json")
 
     private val usersList: MutableList<User> = loadAllUsers()
@@ -22,6 +26,7 @@ class UsersRepository private constructor() {
     private fun loadAllUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
 
     fun addUser(firstName: String, lastName: String, age: Int) {
+        Thread.sleep(10_000)
         val id = usersList.maxOf { it.id + 1 }
         val user = User(id, age, firstName, lastName)
         usersList.add(user)
@@ -32,6 +37,7 @@ class UsersRepository private constructor() {
     }
 
     fun deleteUser(id: Int) {
+        Thread.sleep(10_000)
         usersList.removeIf { it.id == id }
         _users.currentValue = usersList.toList()
         val newOldest = usersList.maxBy { it.age }

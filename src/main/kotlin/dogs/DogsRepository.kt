@@ -7,6 +7,10 @@ import java.io.File
 
 class DogsRepository private constructor() {
 
+    init {
+        println("Creating repository...")
+    }
+
     private val file = File("dogs.json")
 
     private val dogsList: MutableList<Dog> = loadAllDogs()
@@ -18,6 +22,7 @@ class DogsRepository private constructor() {
     private fun loadAllDogs(): MutableList<Dog> = Json.decodeFromString(file.readText())
 
     fun addDog(breedName: String, dogName: String, weight: Double) {
+        Thread.sleep(10_000)
         val id = dogsList.maxOf { it.id + 1 }
         val newDog = Dog(id, weight, breedName, dogName)
         dogsList.add(newDog)
@@ -25,6 +30,7 @@ class DogsRepository private constructor() {
     }
 
     fun deleteDog(id: Int) {
+        Thread.sleep(10_000)
         dogsList.removeIf { it.id == id }
         _dogs.currentValue = dogsList.toList()
     }
