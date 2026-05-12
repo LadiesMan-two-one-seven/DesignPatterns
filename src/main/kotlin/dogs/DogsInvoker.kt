@@ -5,11 +5,11 @@ import command.Invoker
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.thread
 
-object DogsInvoker: Invoker {
+object DogsInvoker: Invoker<AdministratorCommand> {
 
     private val commands = LinkedBlockingQueue<Command>()
 
-    override fun addCommand(command: Command) {
+    override fun addCommand(command: AdministratorCommand) {
         println("New command: $command")
         commands.add(command)
     }
